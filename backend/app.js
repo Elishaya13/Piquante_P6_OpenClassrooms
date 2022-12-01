@@ -3,8 +3,11 @@ const express = require('express')
 const mongoose = require('mongoose')
 const User = require('./models/User')
 const dotenv = require('dotenv')
+const cors = require('cors')
+const path = require('path')
+//** Initialisation de l'API  */
 
-
+const app = express()
 
 
 /** Import des routeurs */
@@ -24,12 +27,6 @@ mongoose.connect(process.env.MONGO_URI,
 
 
 
-//** Initialisation de l'API  */
-
-const app = express()
-
-app.use(express.json())
-
 //  Creation du middleware pour le cors, avant la route API // s'appliquera a toutes les routes
 
 app.use((req, res, next) => {
@@ -39,10 +36,17 @@ app.use((req, res, next) => {
     next()
 })
 
+
+//app.use(cors())
+app.use(express.json())
+app.use('/images', express.static(path.join(__dirname, 'images')))
+
+
+
 // routes
 
-app.use('./api/auth', userRoutes)
-//app.use('/api/sauces', saucesRoutes)
+app.use('/api/auth', userRoutes)
+app.use('/api/sauces', saucesRoutes)
 
 
 
