@@ -26,8 +26,8 @@ exports.createSauce = (req, res, next) => {
         usersLiked: [],
     })
     sauce.save()
-        .then(() => { res.status(201).json({ message: "Sauce enregristrée !" }) })
-        .catch(error => { res.satus(400).json({ error }) })
+        .then(() => { res.status(201).json({ message: "Sauce enregistrée !" }) })
+        .catch(error => { res.status(400).json({ error }) })
 }
 
 
@@ -62,7 +62,7 @@ exports.modifySauce = (req, res, next) => {
 
                 Sauce.updateOne({ _id: req.params.id }, { ...sauceObject, _id: req.params.id })
                     .then(() => res.status(200).json({ message: 'Sauce modifiée !' }))
-                    .catch(error => res.status(401).json({ error }))
+                    .catch(error => res.status(403).json({ error }))
             }
             else {
 
@@ -93,4 +93,102 @@ exports.deleteSauce = (req, res, next) => {
             });
         })
         .catch((error) => res.status(500).json({ error }))
+}
+
+exports.likeSauce = (req, res, next) => {
+    let like = req.body.like
+    const userId = req.body.userId
+    const sauceId = req.params.id
+
+    switch (like) {
+
+        // Dans le cas ou le like est a 0 
+        case 0:
+            Sauce.findOne({ _id: sauceId })
+                .then((sauce) => {
+
+                    // si l'utilisateur est dans le tableau des usersLiked, retire un like a la sauce et supprime l'utilisateur du tableau des likes de la sauce ($pull)
+                    if (sauce.usersLiked.find(user => user === userId)) {
+                        Sauce.updateOne({ _id: sauceId }, { $inc: { likes: -1 }, $pull: { usersLiked: userId }, _id: sauceId })
+
+                            .then(() => res.status(200).json({ message: "Avis supprimé !" }))
+                            .catch((error) => res.status(400).json({ error }))
+                    }
+                    // si l'utilisateur se trouve dans le tableau des userDisliked, retire un dislike du tableau des dislikes
+                    if (sauce.usersDisliked.find(user => user === userId)) {
+                        Sauce.updateOne({ _id: sauceId },
+                            {
+                                $inc: { dislikes: -1 },
+                                $pull: { usersDisliked: userId },
+                                _id: sauceId
+                            })
+
+                            .then(() => res.status(200).json({ message: "Avis supprimé !" }))
+                            .catch((error) => res.status(400).json({ error }))
+                    }
+                })
+                .catch((error) => res.status(400).json({ error }))
+            break
+
+        // Si le like passe a 1, recupere la sauce de ma DB et met a jour le nombre de like sur la sauce, verifie si l'utilsateur n'a pas deja like
+        case 1:
+
+            Sauce.findOne({ _id: sauceId })
+                .then((sauce) => {
+                    if (sauce.usersLiked.find(user => user === userId)) {
+                        Sauce.updateOne({ _id: sauceId },
+                            {
+                                $inc: { likes: -1 },
+                                $pull: { usersLiked: userId },
+                                _id: sauceId
+                            })
+
+                            .then(() => res.status(200).json({ message: "Avis supprimé !" }))
+                            .catch((error) => res.status(400).json({ error }))
+                    } else {
+                        Sauce.updateOne({ _id: sauceId },
+                            {
+                                $inc: { likes: 1 },
+                                $push: { usersLiked: userId },
+                                _id: sauceId
+                            })
+                            .then(() => res.status(200).json({ message: "Avis donné !" }))
+                            .catch((error) => res.status(400).json({ error }))
+                    }
+                })
+                .catch((error) => res.status(400).json({ error }))
+
+            break
+        // Si l'utilisateur clic sur l'avis negatif, alors on ajoute un dislike 
+        // si l'utilisateur avait deja donné un avis negatif, retire la valeur du dislike  et supprime l'utilisateur du tableau des disliked 
+        case -1:
+            Sauce.findOne({ _id: sauceId })
+                .then((sauce) => {
+                    if (sauce.usersDisliked.find(user => user === userId)) {
+                        Sauce.updateOne({ _id: sauceId },
+                            {
+                                $inc: { dislikes: -1 },
+                                $pull: { usersDisliked: userId },
+                                _id: sauceId
+                            })
+
+                            .then(() => res.status(200).json({ message: "Avis negatif supprimé !" }))
+                            .catch((error) => res.status(400).json({ error }))
+                    } else {
+                        Sauce.updateOne({ _id: sauceId },
+                            {
+                                $inc: { dislikes: 1 },
+                                $push: { usersDisliked: userId },
+                                _id: sauceId
+                            })
+                            .then(() => res.status(200).json({ message: "Avis negatif donné !" }))
+                            .catch((error) => res.status(400).json({ error }))
+                    }
+                })
+                .catch((error) => res.status(400).json({ error }))
+            break
+        default:
+            console.log(`il n y a pas de ${like}`)
+    }
+
 }
