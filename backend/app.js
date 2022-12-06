@@ -5,6 +5,10 @@ const User = require('./models/User')
 const dotenv = require('dotenv')
 const cors = require('cors')
 const path = require('path')
+const helmet = require('helmet')
+
+
+
 //** Initialisation de l'API  */
 
 const app = express()
@@ -14,7 +18,7 @@ const app = express()
 const userRoutes = require('./routes/user')
 const saucesRoutes = require('./routes/sauces')
 
-dotenv.config()
+
 
 //** Connnection à la BDD */
 mongoose.connect(process.env.MONGO_URI,
@@ -36,7 +40,9 @@ app.use((req, res, next) => {
     next()
 })
 
-
+app.use(helmet({
+    crossOriginResourcePolicy: false
+}))
 //app.use(cors())
 app.use(express.json())
 app.use('/images', express.static(path.join(__dirname, 'images')))

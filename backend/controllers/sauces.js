@@ -117,7 +117,7 @@ exports.likeSauce = (req, res, next) => {
                                 _id: sauceId
                             })
 
-                            .then(() => res.status(200).json({ message: "Avis supprimé !" }))
+                            .then(() => res.status(204).json({ message: "Avis supprimé !" }))
                             .catch((error) => res.status(400).json({ error }))
                     }
                     // si l'user se trouve dans le tableau des userDisliked, retire un dislike du compteur des dislikes et retire l'user du tableau des dislikes
@@ -133,7 +133,7 @@ exports.likeSauce = (req, res, next) => {
                             .catch((error) => res.status(400).json({ error }))
                     }
                 })
-                .catch((error) => res.status(400).json({ error }))
+                .catch((error) => res.status(404).json({ error }))
             break
 
         // Si le like passe a 1, met a jour le nombre de like et ajoute l'id de l'user dans le tableau des usersLiked
