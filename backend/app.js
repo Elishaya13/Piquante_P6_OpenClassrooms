@@ -1,23 +1,18 @@
-//** Import des modules nécessaires */
+/** Import des modules nécessaires */
 const express = require('express')
 const mongoose = require('mongoose')
-const User = require('./models/User')
-const dotenv = require('dotenv')
 const cors = require('cors')
 const path = require('path')
 const helmet = require('helmet')
 
 
 
-//** Initialisation de l'API  */
-
+/** Initialisation de l'API  */
 const app = express()
-
 
 /** Import des routeurs */
 const userRoutes = require('./routes/user')
 const saucesRoutes = require('./routes/sauces')
-
 
 
 //** Connnection à la BDD */
@@ -31,26 +26,17 @@ mongoose.connect(process.env.MONGO_URI,
 
 
 
-//  Creation du middleware pour le cors, avant la route API // s'appliquera a toutes les routes
+/** Creation du middleware pour le cors */
+app.use(cors())
 
-app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', '*')
-    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization')
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS')
-    next()
-})
-
-app.use(helmet({
-    crossOriginResourcePolicy: false
-}))
-//app.use(cors())
+// Utilisation d'helmet pour la sécurité
+app.use(helmet({ crossOriginResourcePolicy: false }))
 app.use(express.json())
 app.use('/images', express.static(path.join(__dirname, 'images')))
 
 
 
-// routes
-
+// Routes
 app.use('/api/auth', userRoutes)
 app.use('/api/sauces', saucesRoutes)
 

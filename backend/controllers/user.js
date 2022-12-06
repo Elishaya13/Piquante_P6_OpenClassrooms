@@ -12,8 +12,6 @@ const jwt = require('jsonwebtoken')
 // Fonction pour créer un nouvel utilisateur
 exports.signup = (req, res, next) => {
 
-
-
     // Hachage du mot de passe avec bcrypt , variable salt en environnement pour plus de sécurité
     bcrypt.hash(req.body.password, parseInt(process.env.SALT_NUMB))
 
