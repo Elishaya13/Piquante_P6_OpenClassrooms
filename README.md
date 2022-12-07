@@ -14,6 +14,8 @@ API Documentation :
 
 - Créer votre fichier .env et renseigner l'adresse de votre serveur mongoDb, un mot de passe jsonWenToken et le nombre de salt pour Bcrypt
 
+- Créer un dossier images
+
 - Créer le serveur avec npm install
 
 - Lancer le serveur avec la commande : npm run start
