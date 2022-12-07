@@ -47,7 +47,7 @@ exports.login = (req, res, next) => {
                             res.status(200).json({
                                 userId: user._id,
                                 token:
-                                    //Nous utilisons la fonction sign de jsonwebtoken pour chiffrer un nouveau token
+                                    // Nous utilisons la fonction sign de jsonwebtoken pour chiffrer un nouveau token
                                     jwt.sign(
                                         { userId: user._id },
                                         process.env.TOKEN_JWT,
