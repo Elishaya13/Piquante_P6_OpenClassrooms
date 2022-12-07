@@ -12,9 +12,11 @@ ____________________________________________________________________
 
 API Documentation : 
 
-- Créer votre fichier .env et renseigner l'adresse de votre serveur mongoDb, un mot de passe jsonWenToken et le nombre de salt pour Bcrypt
+- Cloner le repo
 
 - Créer un dossier images
+
+- Créer votre fichier .env et renseigner l'adresse de votre serveur mongoDb, un mot de passe jsonWenToken et le nombre de salt pour Bcrypt
 
 - Créer le serveur avec npm install
 
