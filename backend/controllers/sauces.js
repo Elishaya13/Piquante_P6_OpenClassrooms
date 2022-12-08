@@ -69,11 +69,11 @@ exports.modifySauce = (req, res, next) => {
                 // Je mets à jour mes données
                 Sauce.updateOne({ _id: req.params.id }, { ...sauceObject, _id: req.params.id })
                     .then(() => res.status(200).json({ message: 'Sauce modifiée !' }))
-                    .catch(error => res.status(404).json({ error }))
+                    .catch(error => res.status(400).json({ error }))
             }
             else {
 
-                res.status(401).json({ message: 'Non autorisée ! ' })
+                res.status(403).json({ message: 'Non autorisée ! ' })
 
             }
 
@@ -99,7 +99,7 @@ exports.deleteSauce = (req, res, next) => {
                     .catch((error) => res.status(400).json({ error }))
             });
         })
-        .catch((error) => res.status(500).json({ error }))
+        .catch((error) => res.status(404).json({ error }))
 }
 
 // Like ou Dislike une sauce
@@ -130,7 +130,7 @@ exports.likeSauce = (req, res, next) => {
                             })
 
                             .then(() => res.status(204).json({ message: "Avis supprimé !" }))
-                            .catch((error) => res.status(404).json({ error }))
+                            .catch((error) => res.status(400).json({ error }))
                     }
                     // si l'user se trouve dans le tableau des userDisliked, retire un dislike du compteur des dislikes et retire l'user du tableau des dislikes
                     if (sauce.usersDisliked.find(user => user === userId)) {
@@ -142,7 +142,7 @@ exports.likeSauce = (req, res, next) => {
                             })
 
                             .then(() => res.status(204).json({ message: "Avis supprimé !" }))
-                            .catch((error) => res.status(404).json({ error }))
+                            .catch((error) => res.status(400).json({ error }))
                     }
                 })
                 .catch((error) => res.status(404).json({ error }))
@@ -158,7 +158,7 @@ exports.likeSauce = (req, res, next) => {
                     _id: sauceId
                 })
                 .then(() => res.status(204).json({ message: "Avis donné !" }))
-                .catch((error) => res.status(404).json({ error }))
+                .catch((error) => res.status(400).json({ error }))
 
             break
 
@@ -172,7 +172,7 @@ exports.likeSauce = (req, res, next) => {
                     _id: sauceId
                 })
                 .then(() => res.status(204).json({ message: "Avis negatif donné !" }))
-                .catch((error) => res.status(404).json({ error }))
+                .catch((error) => res.status(400).json({ error }))
 
             break
         default:

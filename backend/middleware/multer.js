@@ -1,10 +1,10 @@
 /** Import de multer package de gestion de fichiers */
 const multer = require('multer')
 
-// Defini les extensions des MIME Type
+// Defini les extensions autorisées en upload
 const MIME_TYPES = {
     'image/jpg': 'jpg',
-    'image/jpeg': 'jpg',
+    'image/jpeg': 'jpeg',
     'image/png': 'png'
 }
 
