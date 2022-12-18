@@ -1,9 +1,11 @@
 /** Import du schema Sauce */
 const Sauce = require('../models/Sauce')
+
+// Import du module Node FS pour la gestion de fichiers
 const fs = require('fs')
 
 
-// Affichage de toutes les sauces
+// Fonction pour l'affichage de toutes les sauces
 exports.getAllSauces = (req, res, next) => {
     Sauce.find()
         .then((sauces) => { res.status(200).json(sauces) })
@@ -12,9 +14,8 @@ exports.getAllSauces = (req, res, next) => {
         })
 }
 
-// Créer une sauce
+// Fonction pour créer une sauce
 exports.createSauce = (req, res, next) => {
-
     const sauceObject = JSON.parse(req.body.sauce)
     delete sauceObject._id
     delete sauceObject._userId
@@ -32,7 +33,7 @@ exports.createSauce = (req, res, next) => {
         .catch(error => { res.status(400).json({ error }) })
 }
 
-// Afficher une sauce par son id
+// Fonction pour afficher une sauce par son id
 exports.getOneSauce = (req, res, next) => {
     Sauce.findOne({ _id: req.params.id })
         .then(sauce => res.status(200).json(sauce))
@@ -41,7 +42,7 @@ exports.getOneSauce = (req, res, next) => {
 
 
 
-// Fonction pour modifier un objet de la requête Post /api/sauces/:id
+// Fonction pour modifier une sauce
 exports.modifySauce = (req, res, next) => {
 
     // Si j'ai une image dans ma requête alors je la traite et je modifie la propriété imageUrl pour lui donner le chemin, sinon je recupère le body
@@ -51,19 +52,16 @@ exports.modifySauce = (req, res, next) => {
     } : {
         ...req.body
     }
-
-
     delete sauceObject._userId
 
     // Je cherche la sauce dans la base de donnée
     Sauce.findOne({ _id: req.params.id })
-
         .then((sauce) => {
 
-            // Je recupère uniquement le nom du fichier contenu dans l url
+            // Je recupère uniquement le nom du fichier contenu dans l'url
             const filename = sauce.imageUrl.split("/images/")[1]
 
-            // Je verifie si l'utilisateur est celui a qui appartient la sauce
+            // Je verifie si l'utilisateur est celui à qui appartient la sauce
             if (sauce.userId === req.auth.userId) {
 
                 // Je mets à jour mes données
@@ -72,11 +70,8 @@ exports.modifySauce = (req, res, next) => {
                     .catch(error => res.status(400).json({ error }))
             }
             else {
-
                 res.status(403).json({ message: 'Non autorisée ! ' })
-
             }
-
             // Je supprime l'ancien fichier si besoin
             if (req.file) {
                 fs.unlink(`images/${filename}`, (err) => {
@@ -88,11 +83,15 @@ exports.modifySauce = (req, res, next) => {
         .catch(error => { res.status(400).json({ error }) })
 }
 
-// Supprime une sauce
+// Fonction pour supprimer une sauce
 exports.deleteSauce = (req, res, next) => {
     Sauce.findOne({ _id: req.params.id })
         .then((sauce) => {
+
+            // Je récupère uniquement le nom du fichier contenu dans l'url
             const filename = sauce.imageUrl.split("/images/")[1]
+
+            // J'utilise la fonction unlink de FS pour supprimer le fichier du dossier images puis je supprime les données de la sauce
             fs.unlink(`images/${filename}`, () => {
                 Sauce.deleteOne({ _id: req.params.id })
                     .then(() => res.status(200).json({ message: "Sauce supprimée !" }))
@@ -102,7 +101,7 @@ exports.deleteSauce = (req, res, next) => {
         .catch((error) => res.status(404).json({ error }))
 }
 
-// Like ou Dislike une sauce
+// Fonction Like ou Dislike une sauce
 exports.likeSauce = (req, res, next) => {
 
     let like = req.body.like // Recupère le like de la requête, 0 ou 1 ou -1
@@ -112,10 +111,10 @@ exports.likeSauce = (req, res, next) => {
     // Traite chaque cas de valeur du like
     switch (like) {
 
-        // Dans le cas ou le like est a 0 
+        // Dans le cas ou le like ou un dislike est retiré (est à 0) 
         case 0:
 
-            // trouve la sauce dans la base de donnée
+            // Trouve la sauce dans la base de donnée
             Sauce.findOne({ _id: sauceId })
 
                 .then((sauce) => {
@@ -148,7 +147,7 @@ exports.likeSauce = (req, res, next) => {
                 .catch((error) => res.status(404).json({ error }))
             break
 
-        // Dans le cas d'un like (1)
+        // Dans le cas d'un like (à 1)
         case 1:
             // Si le like passe a 1, met a jour le nombre de like et ajoute l'id de l'user dans le tableau des usersLiked avec ($push)
             Sauce.updateOne({ _id: sauceId },
@@ -162,7 +161,7 @@ exports.likeSauce = (req, res, next) => {
 
             break
 
-        // Dans le cas d'un dislike (-1)
+        // Dans le cas d'un dislike (à -1)
         case -1:
             //Si l'user met un dislike, alors on ajoute 1 au compteur des dislikes de la sauce et on stock l'id de l'user dans le tableau des usersDisliked     
             Sauce.updateOne({ _id: sauceId },

@@ -14,10 +14,7 @@ exports.signup = (req, res, next) => {
 
     // Hachage du mot de passe avec bcrypt , variable salt en environnement pour plus de sécurité
     bcrypt.hash(req.body.password, parseInt(process.env.SALT_NUMB))
-
-
         .then(hash => {
-
             const user = new User({
                 email: req.body.email,
                 password: hash
@@ -47,13 +44,12 @@ exports.login = (req, res, next) => {
                             res.status(200).json({
                                 userId: user._id,
                                 token:
-                                    // Nous utilisons la fonction sign de jsonwebtoken pour chiffrer un nouveau token
+                                    // Nous utilisons la fonction sign de jsonwebtoken pour chiffrer un nouveau token et lui attribuons une durée
                                     jwt.sign(
                                         { userId: user._id },
                                         process.env.TOKEN_JWT,
                                         { expiresIn: '24h' }
                                     )
-
                             })
                         }
                     })
@@ -62,9 +58,7 @@ exports.login = (req, res, next) => {
                     })
             }
         })
-
         .catch(error => {
             res.status(500).json({ error })
         })
-
 }

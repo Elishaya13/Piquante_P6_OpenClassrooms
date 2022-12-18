@@ -16,7 +16,7 @@ const userRoutes = require('./routes/user')
 const saucesRoutes = require('./routes/sauces')
 
 
-//** Connnection à la BDD */
+/** Connnection à la BDD */
 mongoose.connect(process.env.MONGO_URI,
     {
         useNewUrlParser: true,
@@ -44,16 +44,14 @@ app.use(cors())
 
 // Utilisation d'helmet pour la sécurité
 app.use(helmet({ crossOriginResourcePolicy: false }))
+
 app.use(express.json())
 app.use('/images', express.static(path.join(__dirname, 'images')))
 
 
 
-// Routes
+/**  Routes */
 app.use('/api/auth', userRoutes)
 app.use('/api/sauces', saucesRoutes)
-
-
-
 
 module.exports = app

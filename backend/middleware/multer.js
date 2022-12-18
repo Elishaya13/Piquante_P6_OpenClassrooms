@@ -8,6 +8,8 @@ const MIME_TYPES = {
     'image/png': 'png'
 }
 
+// On indique à multer un fichier de destination pour stocker les images
+// On renomme les images en supprimant les espaces s'il y en avait en les remplacant par un "_ " et en y ajoutant la date du jour et on y rajoute l'extension
 const storage = multer.diskStorage({
     destination: (req, file, callback) => {
         callback(null, 'images')
@@ -19,7 +21,6 @@ const storage = multer.diskStorage({
         let name = file.originalname.split(' ').join('_')
         name = name.split("." + extension)[0]
         callback(null, name + '_' + Date.now() + "." + extension)
-
     }
 })
 module.exports = multer({ storage: storage }).single('image')

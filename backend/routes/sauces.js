@@ -1,11 +1,14 @@
+/** Import des modules nécessaires */
 const express = require('express')
-const router = express.Router() // 
+const router = express.Router()
 
 const auth = require('../middleware/auth')
 const multer = require('../middleware/multer')
 
+// Import des fonctions pour les sauces
 const sauceCtrl = require('../controllers/sauces')
 
+/** Définition des routes */
 router.get('/', auth, sauceCtrl.getAllSauces)
 router.post('/', auth, multer, sauceCtrl.createSauce)
 router.get('/:id', auth, sauceCtrl.getOneSauce)
